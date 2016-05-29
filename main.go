@@ -28,20 +28,24 @@ func main() {
 
 	app := gin.Default()
 	app.GET("/", index)
+	app.GET("/articles", ArticlesList)
+	app.POST("/articles", ArticlePost)
+	app.GET("/articles/:article_id", ArticleDetail)
+
 	app.Run(":8000")
 
 }
 
-func initDb() {
-	db, err = sql.Open("sqlite3", "db.sqlite3")
+func initDb() *gorp.DbMap {
+	db, err := sql.Open("sqlite3", "db.sqlite3")
 	checkErr(err, "initDb: Sql.Open failed")
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
-	dbmpa.AddTableWithName(Article{}, "articles").SetKeys(true, "Id")
+	dbmap.AddTableWithName(Article{}, "articles").SetKeys(true, "Id")
 	checkErr(err, "initDb: Create tables failed")
 	return dbmap
 }
 
-func checkErr(err error, loc, msg string) {
+func checkErr(err error, msg string) {
 	if err != nil {
 		log.Fatal(msg, err)
 	}
